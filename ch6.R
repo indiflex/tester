@@ -18,6 +18,7 @@ tsvdata
 class(tsvdata)
 str(tsvdata)
 
+
 # read.fwf - fixed width file ####
 fwfdata = read.fwf('../temper.txt', header=F, width = c(15, 4, 69, 4, 1))
 
@@ -57,3 +58,14 @@ save(mtx, file='data/meltop100.rda')
 rm(mtx)
 load('data/meltop100.rda')
 View(mtx)
+
+data$'성별'
+nrow(data[data$'성별' == '여',])
+
+## psych ###########
+install.packages('psych')
+library('psych')
+describe(data)
+describe(data, IQR=T)
+data('iris')
+describe(iris)

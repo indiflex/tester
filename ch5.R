@@ -42,3 +42,8 @@ Sys.time() - start
 
 install.packages('data.table')
 install.packages('ggplot2')
+
+update.packages('dplyr')
+remove.packages('data.table', )
+library()
+.libPaths()
