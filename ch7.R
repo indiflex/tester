@@ -398,6 +398,11 @@ meltsum
 
 dcast(meltsum, Sales~year, value.var="value")
 
+smdt
+library('reshape2')
+dcast(smdt, stuno~Korean, value.var = 'Korean')
+
+colnames(meltsum)
 # array ############
 dataArray = array(1:24, dim=c(3, 4, 2))
 dataArray
@@ -422,23 +427,49 @@ attr(dataArray, "dim") = c(3,8)
 attr(dataArray, "dim") = NULL
 dataArray
 
-
 # ----------------------------------------------------------
+head(data)
+data$group1 = NULL
+smdt = smdt[-nrow(smdt), ]
+data$group = rep(sample(c('A조','B조','C조')), times=160)
+head(data, 20)
+nrow(data[data$group=="A조",])
+nrow(data[data$group=="B조",])
+nrow(data[data$group=="C조",])
+
+apply(smdt[,2:4], MARGIN = 2, FUN = mean)
+smdt[nrow(smdt)+1,2:4] = apply(smdt[,2:4], MARGIN = 2, FUN = mean)
+smdt[nrow(smdt),1]="계"
+smdt$total = apply(smdt[,2:4],MARGIN = 1, FUN = sum)
+smdt$avg = apply(smdt[,2:4],MARGIN = 1, FUN = mean)
+smdt
 
 # Try This - last #####
 # 1 - data$group 컬럼에 A조~C조 랜덤으로 160명씩 고르게 분포시키시오.
 data$group = sample(c(rep('A조', 160), rep('B조', 160), rep('C조', 160)))
 cat(nrow(data), nrow(data[data$group == 'A조',]), nrow(data[data$group == 'B조',]))
 
+data$group1 = rep(LETTERS[1:3], length.out=480)
+dim(data[data$group=='A',])
+cat(nrow(data), nrow(data[data$group1 == 'A',]), nrow(data[data$group1 == 'B',]))
+
 # 2 - fibonacci
 # fibo.R 참조
 
-smdt = data.frame(stuno = 1:5, Korean=sample(60:100, 5), English=sample((5:10) * 10, 5), Math=sample(50:100, 5))
+set.seed(255)
+smdt = data.frame(stuno = 1:5, 
+                  Korean=sample(60:100, 5),
+                  English=sample((5:10) * 10, 5),
+                  Math=sample(50:100, 5))
+
 
 # 3-1 - apply 과목별 평균점수 행 추가
 sa = sapply(smdt[, 2:4], mean)
+sa
 sa[1:3] = round(sa[1:3])
-smdt[nrow(smdt) + 1, ] = c(100, sa)
+smdt
+smdt[nrow(smdt) + 1, ] = c(100, sa)   # 계 자리에 임의로 100을 입력(numeric유지)
+smdt[nrow(smdt) + 1, ] = c('계', sa)  # or rbind(c('계', sa))
 
 smdt[nrow(smdt), ] = NULL
 smdt = smdt[-nrow(smdt), ]
@@ -447,17 +478,84 @@ smdt
 smdt[-6,2:4]
 smdt[6, 2] = as.integer(smdt[6, 2])
 class(smdt[6,2])
-apply(smdt[, 2:4], MARGIN=2, FUN = sum)
-smdt$total = apply(smdt[, 2:4], MARGIN=2, FUN = 'sum')
+apply(smdt[, 2:4], MARGIN=1, FUN = sum)
+smdt$total = apply(smdt[, 2:4], MARGIN=1, FUN = 'sum')
 smdt$avg = apply(smdt[, 2:4], MARGIN=1, mean)
 smdt$avg = round(smdt$avg)
 smdt$total = NULL
 smdt$avg = NULL
 smdt[6,1] = '계'
 smdt
+
+
+smdt$Korean = as.integer(smdt$Korean)
+smdt$English = as.integer(smdt$English)
+smdt$Math = as.integer(smdt$Math)
+smdt$'total' = apply(smdt[, 2:4], MARGIN = 1, FUN = sum)
+
+# 4
+month.abb
+
+sales = cbind( data.frame(no=1:12, year=2016:2019), 
+               matrix(round(runif(48), 3) * 100000, ncol=12, dimnames = list(NULL, month.abb)) )
+sales
+melt(sales[,2:nrow(sales)], id.vars = "year", variable.name = 'month', value.name = 'saleamt')
+
 # ----------------------------------------------------------
 data
 attach(data)
 data$수학
 mean(수학)
 detach(data)
+
+smdt
+sales
+dfsum
+
+# dplyr #########
+library(dplyr)
+library(lubridate)
+?lubridate
+
+inner_join(sales, dfsum, by=c('year' = 'year'))
+left_join(sales, dfsum, by=c('year' = 'year'))
+right_join(sales, dfsum, by=c('year' = 'year'))
+inner_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
+semi_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
+full_join(sales, dfsum, by=c('year' = 'year', 'no' = 'yno'))
+anti_join(sales, dfsum, by=c('no' = 'yno'))
+
+
+# order #############
+t = c(5, 7, 2, 8, 20, 11, 19)
+sort(-t)
+order(t)
+rev(t)
+t[order(t)]
+t[rev(t)]
+t[order(t, decreasing = T)]
+rev(t[order(t)])
+
+smdt[order(smdt$avg, -smdt$Korean),]
+smdt
+sort(smdt$avg)
+
+# missing values ########
+t = c(1:5, NA, 7, NA, 9, 10)
+t
+is.na(t)
+table(is.na(t))
+t[!is.na(t)]
+mean(t[!is.na(t)])
+t = ifelse(is.na(t), 0, t)
+t
+is.infinite(t)
+mean(t, na.rm = T)
+
+
+m1=m2=m3=matrix(c(1:3, NA, 9:3, NA, 1:3), nrow=3)
+m1[is.na(m1)] = 0
+m1
+mean(m2[,2], na.rm=T)
+m2[,2]
+m2[is.na(m2[,2]), 2]
