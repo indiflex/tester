@@ -447,21 +447,42 @@ smdt
 # Try This - last #####
 # 1 - data$group 컬럼에 A조~C조 랜덤으로 160명씩 고르게 분포시키시오.
 data$group = sample(c(rep('A조', 160), rep('B조', 160), rep('C조', 160)))
-cat(nrow(data), nrow(data[data$group == 'A조',]), nrow(data[data$group == 'B조',]))
+sample(c(rep('A', 160), rep('B', 160), rep('C', 160)))
 
+cat(nrow(data), nrow(data[data$group == 'A조',]), nrow(data[data$group == 'B조',]))
+head(data)
 data$group1 = rep(LETTERS[1:3], length.out=480)
 dim(data[data$group=='A',])
 cat(nrow(data), nrow(data[data$group1 == 'A',]), nrow(data[data$group1 == 'B',]))
 
 # 2 - fibonacci
 # fibo.R 참조
+while(TRUE) {
+  x = as.integer(readline(prompt = "Input the number: "))
+  if (x <= 0) break
+  
+  p0 = 0
+  p1 = 1
+  ret = paste(p0, p1)
+  while(num > 2) {
+    p = p0 + p1
+    p0 = p1
+    p1 = p
+    ret = paste(ret, p)
+    
+    num = num - 1
+  }
+  
+  print(ret)
+}
+
 
 set.seed(255)
 smdt = data.frame(stuno = 1:5, 
                   Korean=sample(60:100, 5),
                   English=sample((5:10) * 10, 5),
                   Math=sample(50:100, 5))
-
+smdt
 
 # 3-1 - apply 과목별 평균점수 행 추가
 sa = sapply(smdt[, 2:4], mean)
@@ -470,16 +491,33 @@ sa[1:3] = round(sa[1:3])
 smdt
 smdt[nrow(smdt) + 1, ] = c(100, sa)   # 계 자리에 임의로 100을 입력(numeric유지)
 smdt[nrow(smdt) + 1, ] = c('계', sa)  # or rbind(c('계', sa))
+smdt[nrow(smdt), ] = c(100, sa)
+
+class(smdt$Korean)
+class(smdt$Math)
+smdt$Korean = as.integer(smdt$Korean)
+smdt[, 2] = as.integer(smdt[,2])
+smdt[, 2:4] = as.integer(smdt[,2:4])
+class(smdt[,2:4])
+for (i in 2:4)
+  smdt[, i] = as.integer(smdt[, i])
+colnames(smdt)
+
+smdt$total = apply(smdt[, 2:4], MARGIN = 1, sum)
+smdt$avg = apply(smdt[, 2:4], MARGIN = 1, mean)
+
 
 smdt[nrow(smdt), ] = NULL
 smdt = smdt[-nrow(smdt), ]
 smdt
+smdt[, 5:6] = round(smdt[, 5:6])
 # 3-2 - 총점과 평균 컬럼 추가
 smdt[-6,2:4]
 smdt[6, 2] = as.integer(smdt[6, 2])
 class(smdt[6,2])
 apply(smdt[, 2:4], MARGIN=1, FUN = sum)
 smdt$total = apply(smdt[, 2:4], MARGIN=1, FUN = 'sum')
+
 smdt$avg = apply(smdt[, 2:4], MARGIN=1, mean)
 smdt$avg = round(smdt$avg)
 smdt$total = NULL
@@ -496,9 +534,18 @@ smdt$'total' = apply(smdt[, 2:4], MARGIN = 1, FUN = sum)
 # 4
 month.abb
 
+dfsum
+data.frame(no=1:12, year=2016:2019)
+
+cbind( data.frame(no=1:12, year=2016:2019), 
+       matrix(round(runif(48), 3) * 100000, ncol=12, dimnames = list(NULL, month.abb)) )
+
 sales = cbind( data.frame(no=1:12, year=2016:2019), 
                matrix(round(runif(48), 3) * 100000, ncol=12, dimnames = list(NULL, month.abb)) )
+
 sales
+library(reshape2)
+melt(data=sales[,2:nrow(sales)], id.vars = "year", variable.name = 'month', value.name = 'saleamt' )
 melt(sales[,2:nrow(sales)], id.vars = "year", variable.name = 'month', value.name = 'saleamt')
 
 # ----------------------------------------------------------

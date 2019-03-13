@@ -1,3 +1,4 @@
+Sys.sleep(10)
 ######### dplyr #########
 library(dplyr)
 data = read.csv('data/성적.csv')
@@ -92,4 +93,5 @@ bind_rows(dfsum, top4)
 bind_cols(dfsum, top4) %>% select(-year1, -yno1)
 cbind(dfsum, top4)
 
+table(sales$year)
 
