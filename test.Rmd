@@ -2,7 +2,9 @@
 title: "테스트"
 author: "Jade"
 date: '2019 3 13 '
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
