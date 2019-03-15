@@ -164,6 +164,8 @@ ggplot(d2, aes(x=displ)) +
 ggplot(d2, aes(x=displ)) + 
   geom_line(aes(y=m1, color='cty')) + 
   geom_line(aes(y=m2, color='hwy'), size=1) +
+  scale_colour_manual("", breaks = c("cty", "hwy"),
+                      values = c("red", "blue")) +
   xlab("배기량(cc)") +
   scale_y_continuous("연비(M/h)", limits = c(0, 50)) +
   labs(title = '연도별 통합 연비', subtitle = '(굵은선은 고속도로)') 
@@ -217,15 +219,92 @@ mpg
 ggplot(data[data$kor > 50,]) + geom_line(aes(kor, math))
 
 
+# 히스토그램 ########
+ggplot(mpg, aes(displ)) +
+  geom_histogram(aes(fill=class), 
+                 # bins = 5,
+                 binwidth = .3,
+                 col='black', 
+                 size=.5) +
+  labs(title = 'Title', subtitle = 'Sub Title')
+
+mpg=rename(mpg, manufacturer=manu)
+mpg
+
+g3 = ggplot(mpg, aes(manufacturer)) +
+  geom_bar(aes(fill=class),
+           width = 0.7) +
+  theme(axis.text.x = element_text(angle=45,
+                                   vjust=0.6)) +
+  labs(title = 'Title', subtitle = 'Sub Title')
+g3
+load('../hellor/data/data_eng.rda')
+head(data)
+
+g4 = ggplot(mpg, aes(cty)) +
+  geom_density(aes(fill=factor(cyl)), alpha=0.8) +
+  labs(title="밀도그래프", subtitle = "실린더수에 따른 시내연비의 밀도그래프",
+       caption="Source: ggplot2::mpg",
+       x = "도시 연비",
+       fill = "실린더수")
+
+g5 = ggplot(data[data$kor > 93,], aes(kor)) +
+  geom_density(aes(fill=factor(cls)), alpha=0.5)
+  labs(title="반별 국어 우수 학생", subtitle = "(국어 성적 93점 초과 학생)",
+       caption="기준 점수 > 93",
+       x = "성적",
+       fill = "학급")
+g5
+grid.arrange(g4, g5, ncol=2)
+
+install.packages('gridExtra')
+library(gridExtra)
+
+grid.arrange(g4, g3, ncol=2)
+
 ## Try This : ggplot2 ########
 # 1 
 ggplot(data=d4, aes(x=displ)) +
-  geom_line(data=d4 %>% filter(year==1999), aes(y=m1, color='1999 cty')) +
-  geom_line(data=d4 %>% filter(year==1999), aes(y=m2, color='1999 hwy')) +
-  geom_line(data=d4 %>% filter(year==2008), aes(y=m1, color='2008 cty')) +
-  geom_line(data=d4 %>% filter(year==2008), aes(y=m2, color='2008 hwy')) +
+  geom_line(data=d4 %>% filter(year==1999), aes(y=m1, color='1999 cty'), size=1) +
+  geom_line(data=d4 %>% filter(year==1999), aes(y=m2, color='1999 hwy'), size=1) +
+  geom_line(data=d4 %>% filter(year==2008), aes(y=m1, color='2008 cty'), size=2) +
+  geom_line(data=d4 %>% filter(year==2008), aes(y=m2, color='2008 hwy'), size=2) +
   scale_colour_manual("", breaks = c("1999 cty", "1999 hwy", "2008 cty", "2008 hwy"),
                       values = c("gray", "pink", "blue", "darkblue")) +
-  xlab("배기량(cc)") +
+  xlab("배기량(cc)") + xlim(1, 8) +
   scale_y_continuous("연비(M/h)", limits = c(0, 50)) +
   labs(title = '연도별 통합 연비', subtitle = '(굵은선은 2008년)')
+
+# 2
+ggplot(data[data$kor >= 80,], aes(cls)) +
+  geom_bar(aes(fill=gen),
+           width = 0.7) +
+  xlab('학급') + ylab('학생수') +
+  # scale_fill_discrete(name = "성별") +
+  labs(title = '국어 우수 학생', subtitle = '(80점 이상)', fill = "성별")
+
+# 3
+ggplot(data[data$kor > 94,], aes(kor)) +
+  geom_density(aes(fill=factor(cls)), alpha=0.5) +
+  labs(title="반별 국어 우수 학생", subtitle = "(국어 성적 A+)",
+       caption="기준 점수 >= 95",
+       x = "성적", y = "밀도",
+       fill = "학급")
+
+last_plot()
+
+# 4
+asiatot = midwest %>% filter(poptotal <= 500000 & popasian <= 10000) %>% select(county, state,poptotal, popasian)
+
+nrow(asiatot)
+nrow(midwest)
+
+ggplot(asiatot) + geom_point(aes(x=poptotal, y=popasian), alpha=0.5) +
+  xlab('전체인구') + ylab('아시아계인구') +
+  xlim(0, 500000) + ylim(0, 10000) +
+  labs(title='전체인구 대비 아시아계인구')
+
+table(is.infinite(midwest$poptotal))
+table(is.na(midwest$popasian))
+table(is.infinite(midwest$popasian))
+

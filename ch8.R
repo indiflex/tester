@@ -67,7 +67,7 @@ data %>%
 
 
 data %>%
-  group_by(반) %>%
+  group_by(cls) %>%
   summarise(mean_math = mean(math),
             sum_math = sum(math),
             medi_math = median(math),

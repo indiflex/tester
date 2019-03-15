@@ -1,15 +1,47 @@
 ---
 title: "테스트"
 author: "Jade"
-date: '2019 3 13 '
+date: '2019년 3월 13일 '
 output:
-  pdf_document: default
+  # pdf_document: default
   html_document: default
 ---
 
+[네이버](https://naver.com)
+```{r}
+
+```
+
+----
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```
+This is code area
+```
+
+# #Test1
+## ##Test2
+### ###Test3
+#### ####Test4
+##### #####Test5
+*italic*
+
+**bold**
+
+~~line-through~~
+
+```{r, echo=FALSE}
+load('../hellor/data/data_eng.rda')
+mpg = as.data.frame(ggplot2::mpg)
+```
+```{r}
+head(mpg)
+```
+
+
+
 
 ## R Markdown
 
