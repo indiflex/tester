@@ -63,20 +63,4 @@ girafe(ggobj = gg_map2)
 ```
 
 
-## 3.
-```{r}
-head(tbc)
-# tbc %>% distinct(year)
-# tbc %>% filter(!is.na(NewPts)) %>% filter(year %in% 2006:2015)
-tt = tbc %>% filter(year %in% 2006:2015) %>% group_by(code, name1) %>% summarise(pa = sum(NewPts))
-tt$pa = ifelse(is.na(tt$pa), 0, tt$pa)
-tt$pa[is.na(tt$pa)] = 0
-tt
-ggChoropleth(data=tt, 
-             aes(fill = pa, map_id = code, tooltip = name1),
-             map = kormap1, title = '시도별 결핵환자수',
-             interactive = T) 
-```
-
-
 
