@@ -36,7 +36,7 @@ This is code area
 load('../hellor/data/data_eng.rda')
 mpg = as.data.frame(ggplot2::mpg)
 ```
-```{r}
+```{r mpg}
 head(mpg)
 ```
 

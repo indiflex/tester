@@ -232,3 +232,32 @@ ggChoropleth(data=tt,
 
 tbc %>% filter(name1 == '경기')
 
+
+# interactive #########
+# plotly
+install.packages('plotly')
+library(plotly)
+last_plot()
+ggplot(data=d4, aes(x=displ)) +
+  geom_line(data=d4 %>% filter(year==1999), aes(y=m1, color='1999 cty'), size=1) +
+  geom_line(data=d4 %>% filter(year==1999), aes(y=m2, color='1999 hwy'), size=1) +
+  geom_line(data=d4 %>% filter(year==2008), aes(y=m1, color='2008 cty'), size=2) +
+  geom_line(data=d4 %>% filter(year==2008), aes(y=m2, color='2008 hwy'), size=2) +
+  scale_colour_manual("", breaks = c("1999 cty", "1999 hwy", "2008 cty", "2008 hwy"),
+                      values = c("gray", "pink", "blue", "darkblue")) +
+  xlab("배기량(cc)") + xlim(1, 8) +
+  scale_y_continuous("연비(M/h)", limits = c(0, 50)) +
+  labs(title = '연도별 통합 연비', subtitle = '(굵은선은 2008년)') -> lp
+
+ggplotly(lp)
+ggplotly(korp)
+
+ggplot(data, aes(eng, kor)) +
+  geom_point(aes(color=eng, size=kor), alpha=0.3) -> t
+ggplotly(t)
+
+
+install.packages('dygraphs')
+library(dygraphs)
+library(xts)
+xts(d4)

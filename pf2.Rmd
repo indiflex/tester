@@ -1,0 +1,82 @@
+---
+title: "빅데이터 시각화 포플 #2"
+author: "Jade"
+date: '2019년 3월 18일'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggiraphExtra)
+library(stringi)
+library(ggiraph)
+library(kormaps2014)
+
+load('data/chodata.rda')
+usmap = map_data('state')
+```
+
+## 1. 
+```{r}
+ggChoropleth(data=chodata,
+             aes(fill=c(Murder, Assault, UrbanPop,Rape), map_id=state),
+             map = usmap, interactive = T)
+
+```
+
+## 2.
+```{r}
+tooltip2 = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(chodata$state)),
+  sprintf('<p> <strong>%.0f</strong> / %.0f 만</p>', chodata$Rape,  chodata$UrbanPop * 10)
+)
+
+onclick2 <- sprintf(
+  "window.open(\"%s%s\")",
+  "http://en.wikipedia.org/wiki/",
+  as.character(chodata$state)
+)
+
+ggplot(chodata, aes(data = Rape, map_id = state)) +
+  geom_map_interactive( 
+    aes(fill = Rape,
+        data_id = state,
+        tooltip = tooltip2,
+        onclick = onclick2), 
+    map = usmap) +
+  expand_limits(x = usmap$long, y = usmap$lat) +
+  scale_fill_gradient2('Rape', low='red', high = "blue", mid = "green") +
+  labs(title="USA Rape") -> gg_map2
+
+```
+
+```{r, echo=F, include=F}
+ggiraph(code = print(gg_map2))
+```
+```{r}
+girafe(ggobj = gg_map2)
+```
+
+
+## 3.
+```{r}
+head(tbc)
+# tbc %>% distinct(year)
+# tbc %>% filter(!is.na(NewPts)) %>% filter(year %in% 2006:2015)
+tt = tbc %>% filter(year %in% 2006:2015) %>% group_by(code, name1) %>% summarise(pa = sum(NewPts))
+tt$pa = ifelse(is.na(tt$pa), 0, tt$pa)
+tt$pa[is.na(tt$pa)] = 0
+tt
+ggChoropleth(data=tt, 
+             aes(fill = pa, map_id = code, tooltip = name1),
+             map = kormap1, title = '시도별 결핵환자수',
+             interactive = T) 
+```
+
+
+

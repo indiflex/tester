@@ -20,6 +20,20 @@ table_ <- paste0(
   "</tr></table>"
 )
 
+tooltips = paste0(
+  sprintf("<p><strong>%s</strong></p>", as.character(crimes$state)),
+  '<table>',
+  '  <tr>',
+  '    <td>인구(만)</td>',
+  sprintf('<td>%.0f</td>', chodata$UrbanPop * 10),
+  '  </tr>',
+  '  <tr>',
+  '    <td>살인</td>',
+  sprintf('<td>%.0f</td>', chodata$Murder),
+  '  </tr>',
+  '</table>'
+)
+
 # onclick <- sprintf(
 #   "window.open(\"%s%s\")",
 #   "http://en.wikipedia.org/wiki/",
